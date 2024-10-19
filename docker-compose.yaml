@@ -1,0 +1,15 @@
+version: '3'
+
+services:
+  db: 
+    images: mysql: 8.4
+    restart: always
+    ports: 
+      - "5432:5432"
+    enviroment:
+      MYSQL_DATABASE: ${DB_NAME}
+      MYSQL_PASSWORD: ${DB_PASSWORD}
+    container_name: tu-blog
+    volumes:
+      - ./mysql:var/lib/mysql/data
+
