@@ -1,11 +1,26 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { Repository } from 'typeorm';
+import { Role } from './entities/role.entity';
 
 @Injectable()
 export class RolesService {
-  create(createRoleDto: CreateRoleDto) {
-    return 'This action adds a new role';
+  constructor(
+    @InjectRepository(Role)
+    private readonly _roleRepository: Repository<Role>,
+  ) {}
+
+  async create(createRoleDto: CreateRoleDto) {
+    try {
+      const role = this._roleRepository.create(createRoleDto);
+      await this._roleRepository.save(role);
+      return role;
+    } catch (error) {
+      console.log(error);
+      throw new InternalServerErrorException('Send help culos');
+    }
   }
 
   findAll() {

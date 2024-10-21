@@ -4,6 +4,15 @@
 
 # TU BLOG API
 
+1. Clonar respositorio
+2. ```yarn start:dev```
+3. Clonar el ```.env.template``` y renombrarlo a ```.env```
+4. Cambiar variables de entorno
+5. Levantar base de datos
 ```
 docker-compose up -d
+```
+6. Levantar proyecto 
+```
+yarn start:dev
 ```
