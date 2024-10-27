@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Injectable,
+  InternalServerErrorException,
+  Logger,
+} from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -7,6 +11,8 @@ import { Role } from './entities/role.entity';
 
 @Injectable()
 export class RolesService {
+  private readonly logger = new Logger('RolesService');
+
   constructor(
     @InjectRepository(Role)
     private readonly _roleRepository: Repository<Role>,
@@ -18,7 +24,7 @@ export class RolesService {
       await this._roleRepository.save(role);
       return role;
     } catch (error) {
-      console.log(error);
+      this.logger.error(error);
       throw new InternalServerErrorException('Send help culos');
     }
   }
