@@ -1,7 +1,9 @@
 import {
+  BadRequestException,
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
@@ -24,24 +26,35 @@ export class RolesService {
       await this._roleRepository.save(role);
       return role;
     } catch (error) {
-      this.logger.error(error);
-      throw new InternalServerErrorException('Send help culos');
+      this.handleExceptions(error);
     }
   }
 
   findAll() {
-    return `This action returns all roles`;
+    return this._roleRepository.find({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} role`;
+  async findOne(id: string) {
+    const role = await this._roleRepository.findOneBy({ id });
+    if (!role) {
+      throw new NotFoundException(`Role with ID: ${id} not found`);
+    }
+    return role;
   }
 
   update(id: number, updateRoleDto: UpdateRoleDto) {
     return `This action updates a #${id} role`;
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} role`;
+  async remove(id: string) {
+    const role = await this.findOne(id);
+    await this._roleRepository.remove(role);
+  }
+
+  private handleExceptions(error: any) {
+    if (error.code === 'ER_DUP_ENTRY')
+      throw new BadRequestException(error.sqlMessage);
+    this.logger.error(error);
+    throw new InternalServerErrorException('Unexpected error');
   }
 }

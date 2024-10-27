@@ -1,4 +1,4 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { BeforeInsert, Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Role {
@@ -9,4 +9,10 @@ export class Role {
     unique: true,
   })
   name: string;
+  @BeforeInsert()
+  checkNameInsert() {
+    if (this.name) {
+      this.name = this.name.toLowerCase();
+    }
+  }
 }
