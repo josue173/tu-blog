@@ -4,6 +4,7 @@ import { RolesModule } from './roles/roles.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommomModule } from './commom/commom.module';
+import { CategoriesModule } from './categories/categories.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { CommomModule } from './commom/commom.module';
       synchronize: true, // solo para desarrollo
     }),
     CommomModule,
+    CategoriesModule,
   ],
   controllers: [RolesController],
   providers: [],
