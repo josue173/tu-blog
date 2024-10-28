@@ -10,6 +10,7 @@ import { UpdateRoleDto } from './dto/update-role.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Role } from './entities/role.entity';
+import { PaginationDto } from 'src/commom/dto/pagination.dto';
 
 @Injectable()
 export class RolesService {
@@ -30,8 +31,13 @@ export class RolesService {
     }
   }
 
-  findAll() {
-    return this._roleRepository.find({});
+  findAll(paginationDto: PaginationDto) {
+    const { limit = 10, offset = 0 } = paginationDto;
+
+    return this._roleRepository.find({
+      take: limit,
+      skip: offset,
+    });
   }
 
   async findOne(id: string) {
