@@ -48,8 +48,21 @@ export class RolesService {
     return role;
   }
 
-  update(id: number, updateRoleDto: UpdateRoleDto) {
-    return `This action updates a #${id} role`;
+  async update(id: string, updateRoleDto: UpdateRoleDto) {
+    const role = await this._roleRepository.preload({
+      id: id,
+      ...updateRoleDto,
+    });
+    if (!role) {
+      throw new NotFoundException(`Role with ${id} not found`);
+    }
+
+    try {
+      await this._roleRepository.save(role);
+      return role;
+    } catch (error) {
+      this.handleExceptions(error);
+    }
   }
 
   async remove(id: string) {
