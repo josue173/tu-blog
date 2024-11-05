@@ -25,6 +25,8 @@ export class CategoriesService {
       await this._repositoryCategory.save(category);
       return category;
     } catch (error) {
+      console.log(error);
+      
       this.handleExceptions(error);
     }
   }
