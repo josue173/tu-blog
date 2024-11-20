@@ -31,6 +31,7 @@ export class User {
 
   @Column({
     type: 'varchar',
+    unique: true,
   })
   user_email: string;
 

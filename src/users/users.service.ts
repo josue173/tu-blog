@@ -9,6 +9,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
+import { PaginationDto } from 'src/commom/dto/pagination.dto';
 
 @Injectable()
 export class UsersService {
@@ -29,8 +30,13 @@ export class UsersService {
     }
   }
 
-  findAll() {
-    return `This action returns all users`;
+  findAll(paginationDto: PaginationDto) {
+    const { limit = 10, offset = 0 } = paginationDto;
+
+    return this._userRepository.find({
+      take: limit,
+      skip: offset,
+    });
   }
 
   findOne(id: number) {
