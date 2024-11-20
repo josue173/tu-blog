@@ -1,4 +1,3 @@
-import { MinLength } from 'class-validator';
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -16,7 +15,6 @@ export class User {
     type: 'varchar',
     unique: true,
   })
-  @MinLength(7, { message: 'Username too short' })
   username: string;
 
   @Column({

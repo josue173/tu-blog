@@ -3,6 +3,7 @@ import { IsDate, IsEmail, IsString, Matches, MaxLength, MinLength } from 'class-
 
 export class CreateUserDto {
   @IsString()
+  @MinLength(7, { message: 'Username too short' })
   username: string;
 
   @IsString()

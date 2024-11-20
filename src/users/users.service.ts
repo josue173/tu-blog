@@ -4,9 +4,12 @@ import {
   InternalServerErrorException,
   Logger,
 } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+
+import * as bcrypt from 'bcrypt';
+
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { PaginationDto } from 'src/commom/dto/pagination.dto';
@@ -22,8 +25,14 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const user = this._userRepository.create(createUserDto);
+      const { user_password, ...userData } = createUserDto;
+
+      const user = this._userRepository.create({
+        ...userData,
+        user_password: bcrypt.hashSync(user_password, 10),
+      });
       await this._userRepository.save(user);
+      delete user.user_password;
       return user;
     } catch (error) {
       this.handleExceptions(error);
