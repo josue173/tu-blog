@@ -8,17 +8,7 @@ import {
   MinLength,
 } from 'class-validator';
 
-export class CreateUserDto {
-  @IsString()
-  @MinLength(7, { message: 'Username too short' })
-  username: string;
-
-  @IsString()
-  user_first_name: string;
-
-  @IsString()
-  user_last_name: string;
-
+export class LoginUserDto {
   @IsString()
   @IsEmail()
   user_email: string;
@@ -31,8 +21,4 @@ export class CreateUserDto {
       'The password must have a Uppercase, lowercase letter and a number',
   })
   user_password: string;
-
-  @IsDate()
-  @Type(() => Date)
-  user_birthday: Date;
 }

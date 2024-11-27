@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  UnauthorizedException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 
@@ -13,6 +14,7 @@ import { UpdateUserDto } from './dto/update-user.dto';
 import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { PaginationDto } from 'src/commom/dto/pagination.dto';
+import { LoginUserDto } from './dto/login-user.dto';
 
 @Injectable()
 export class UsersService {
@@ -37,6 +39,21 @@ export class UsersService {
     } catch (error) {
       this.handleExceptions(error);
     }
+  }
+
+  async login(loginUserDto: LoginUserDto) {
+    const { user_password, user_email } = loginUserDto;
+    const user = await this._userRepository.findOne({
+      where: { user_email },
+      select: { user_email: true, user_password: true },
+    });
+
+    if (!user) throw new UnauthorizedException('Invalid email');
+
+    if (!bcrypt.compareSync(user_password, user.user_password))
+      throw new UnauthorizedException('Invalid password');
+
+    return user;
   }
 
   findAll(paginationDto: PaginationDto) {
