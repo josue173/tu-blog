@@ -49,6 +49,7 @@ export class User {
   formatNames() {
     this.user_first_name = this.capitalizeCase(this.user_first_name);
     this.user_last_name = this.capitalizeCase(this.user_last_name);
+    this.user_email = this.user_email.toLowerCase().trim();
   }
 
   capitalizeCase(value: string): string {

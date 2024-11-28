@@ -15,6 +15,8 @@ import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { PaginationDto } from 'src/commom/dto/pagination.dto';
 import { LoginUserDto } from './dto/login-user.dto';
+import { JwtService } from '@nestjs/jwt';
+import { JwtPayload } from './interfaces/jwt-payload.interface';
 
 @Injectable()
 export class UsersService {
@@ -23,6 +25,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly _userRepository: Repository<User>,
+    private readonly _jwtService: JwtService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
@@ -35,7 +38,10 @@ export class UsersService {
       });
       await this._userRepository.save(user);
       delete user.user_password;
-      return user;
+      return {
+        user,
+        token: this.getJwt({ user_email: user.user_email }),
+      };
     } catch (error) {
       this.handleExceptions(error);
     }
@@ -53,7 +59,10 @@ export class UsersService {
     if (!bcrypt.compareSync(user_password, user.user_password))
       throw new UnauthorizedException('Invalid password');
 
-    return user;
+    return {
+      user,
+      token: this.getJwt({ user_email }),
+    };
   }
 
   findAll(paginationDto: PaginationDto) {
@@ -75,6 +84,11 @@ export class UsersService {
 
   remove(id: number) {
     return `This action removes a #${id} user`;
+  }
+
+  private getJwt(payload: JwtPayload) {
+    const token = this._jwtService.sign(payload);
+    return token;
   }
 
   private handleExceptions(error: any) {
