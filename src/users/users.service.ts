@@ -39,8 +39,8 @@ export class UsersService {
       await this._userRepository.save(user);
       delete user.user_password;
       return {
-        user,
-        token: this.getJwt({ user_email: user.user_email }),
+        ...user,
+        token: this.getJwt({ user_id: user.user_id }),
       };
     } catch (error) {
       this.handleExceptions(error);
@@ -51,7 +51,7 @@ export class UsersService {
     const { user_password, user_email } = loginUserDto;
     const user = await this._userRepository.findOne({
       where: { user_email },
-      select: { user_email: true, user_password: true },
+      select: { user_email: true, user_password: true, user_id: true },
     });
 
     if (!user) throw new UnauthorizedException('Invalid email');
@@ -60,8 +60,8 @@ export class UsersService {
       throw new UnauthorizedException('Invalid password');
 
     return {
-      user,
-      token: this.getJwt({ user_email }),
+      ...user,
+      token: this.getJwt({ user_id: user.user_id }),
     };
   }
 

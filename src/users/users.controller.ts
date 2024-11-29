@@ -7,10 +7,13 @@ import {
   Param,
   Delete,
   Query,
+  UseGuards,
+  Req,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto, LoginUserDto } from './dto/index';
 import { PaginationDto } from 'src/commom/dto/pagination.dto';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller('users')
 export class UsersController {
@@ -29,6 +32,14 @@ export class UsersController {
   @Get()
   findAll(@Query() paginationDto: PaginationDto) {
     return this.usersService.findAll(paginationDto);
+  }
+
+  @Get('private')
+  @UseGuards(AuthGuard())
+  testingPrivate(@Req() request: Express.Request) {
+    console.log({ user: request.user });
+
+    return 'Hi Prv';
   }
 
   @Get(':id')
