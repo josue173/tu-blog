@@ -14,6 +14,9 @@ import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto, LoginUserDto } from './dto/index';
 import { PaginationDto } from 'src/commom/dto/pagination.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { GetUser } from './decorators/get-user.decorator';
+import { User } from './entities/user.entity';
+import { RawHeaders } from './decorators/raw-headers.decorator';
 
 @Controller('users')
 export class UsersController {
@@ -36,10 +39,20 @@ export class UsersController {
 
   @Get('private')
   @UseGuards(AuthGuard())
-  testingPrivate(@Req() request: Express.Request) {
-    console.log({ user: request.user });
+  testingPrivate(
+    @Req() request: Express.Request,
+    @RawHeaders() rawHeaders: string[],
+    @GetUser() user: User,
+    @GetUser('user_email') user_email: string,
+  ) {
+    // console.log({ user: request.user });
 
-    return 'Hi Prv';
+    return {
+      ok: true,
+      user,
+      user_email,
+      rawHeaders,
+    };
   }
 
   @Get(':id')
