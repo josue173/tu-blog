@@ -1,5 +1,5 @@
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Blog {
@@ -28,8 +28,6 @@ export class Blog {
   blog_likes: number;
 
   @ManyToOne(() => User, (user) => user.blog)
-  @Column({
-    type: 'uuid',
-  })
+  @JoinColumn({ name: 'blog_owner' })
   blog_owner: string;
 }
