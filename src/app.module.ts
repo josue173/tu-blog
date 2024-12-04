@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommomModule } from './commom/commom.module';
 import { CategoriesModule } from './categories/categories.module';
 import { UsersModule } from './users/users.module';
+import { BlogsModule } from './blogs/blogs.module';
 
 @Module({
   imports: [
@@ -24,8 +25,8 @@ import { UsersModule } from './users/users.module';
     CommomModule,
     CategoriesModule,
     UsersModule,
+    BlogsModule,
   ],
   controllers: [RolesController],
-  providers: [],
 })
 export class AppModule {}

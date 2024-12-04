@@ -1,8 +1,10 @@
+import { Blog } from 'src/blogs/entities/blog.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
   Column,
   Entity,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -43,6 +45,9 @@ export class User {
     type: 'date',
   })
   user_birthday: Date;
+
+  @OneToMany(() => Blog, (blog) => blog.blog_owner, { cascade: true })
+  blog: Blog; // virtual relationship, exists only in the entity for navigation purposes
 
   @BeforeInsert()
   @BeforeUpdate()
