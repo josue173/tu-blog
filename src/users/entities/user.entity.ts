@@ -66,7 +66,7 @@ export class User {
       foreignKeyConstraintName: 'id',
     },
   })
-  roles: Role;
+  roles: Role[];
 
   @BeforeInsert()
   @BeforeUpdate()

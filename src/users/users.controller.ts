@@ -9,7 +9,6 @@ import {
   Query,
   UseGuards,
   Req,
-  SetMetadata,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto, LoginUserDto } from './dto/index';
@@ -66,9 +65,9 @@ export class UsersController {
     };
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.usersService.findOne(+id);
+  @Get(':user_id')
+  findOne(@Param('user_id') user_id: string) {
+    return this.usersService.findOne(user_id);
   }
 
   @Patch(':id')

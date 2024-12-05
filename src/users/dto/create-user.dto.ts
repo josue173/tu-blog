@@ -1,8 +1,10 @@
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsDate,
   IsEmail,
   IsString,
+  IsUUID,
   Matches,
   MaxLength,
   MinLength,
@@ -35,4 +37,8 @@ export class CreateUserDto {
   @IsDate()
   @Type(() => Date)
   user_birthday: Date;
+
+  @IsArray()
+  @IsUUID('4', { each: true }) // Validate that each element is a UUID
+  user_role: string[];
 }

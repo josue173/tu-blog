@@ -12,12 +12,14 @@ import * as bcrypt from 'bcrypt';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { PaginationDto } from 'src/commom/dto/pagination.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { Role } from 'src/roles/entities/role.entity';
+import { Blog } from 'src/blogs/entities/blog.entity';
 
 @Injectable()
 export class UsersService {
@@ -26,6 +28,8 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly _userRepository: Repository<User>,
+    @InjectRepository(Role)
+    private readonly _roleRepository: Repository<Role>,
     private readonly _jwtService: JwtService,
   ) {}
 
@@ -37,8 +41,17 @@ export class UsersService {
         ...userData,
         user_password: bcrypt.hashSync(user_password, 10),
       });
+
+      user.roles = createUserDto.user_role.map((id) => {
+        const role = new Role();
+        role.id = id;
+        return role;
+      });
+
+
       await this._userRepository.save(user);
       delete user.user_password;
+
       return {
         ...user,
         token: this.getJwt({ user_id: user.user_id }),
@@ -75,8 +88,12 @@ export class UsersService {
     });
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
+  async findOne(user_id: string) {
+    const role = await this._userRepository.findOneBy({ user_id });
+    if (!role) {
+      throw new NotFoundException(`Role with ID: ${user_id} not found`);
+    }
+    return role;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
