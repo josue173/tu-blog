@@ -34,18 +34,16 @@ export class UsersService {
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const { user_password, ...userData } = createUserDto;
+      const { user_password, user_role, ...userData } = createUserDto;
 
       const user = this._userRepository.create({
         ...userData,
         user_password: bcrypt.hashSync(user_password, 10),
       });
 
-      user.roles = createUserDto.user_role.map((id) => {
-        const role = new Role();
-        role.id = id;
-        return role;
-      });
+      const role = new Role();
+      role.id = user_role; // Assign the single role ID
+      user.roles = role; // Wrap it in an array
 
       await this._userRepository.save(user);
       delete user.user_password;
