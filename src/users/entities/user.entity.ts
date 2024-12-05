@@ -1,9 +1,12 @@
 import { Blog } from 'src/blogs/entities/blog.entity';
+import { Role } from 'src/roles/entities/role.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
   Column,
   Entity,
+  JoinTable,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -48,6 +51,22 @@ export class User {
 
   @OneToMany(() => Blog, (blog) => blog.blog_owner, { cascade: true })
   blog: Blog; // virtual relationship, exists only in the entity for navigation purposes
+
+  @ManyToMany(() => Role)
+  @JoinTable({
+    name: 'users_roles',
+    joinColumn: {
+      name: 'user',
+      referencedColumnName: 'user_id',
+      foreignKeyConstraintName: 'user_id',
+    },
+    inverseJoinColumn: {
+      name: 'role',
+      referencedColumnName: 'id',
+      foreignKeyConstraintName: 'id',
+    },
+  })
+  roles: Role;
 
   @BeforeInsert()
   @BeforeUpdate()

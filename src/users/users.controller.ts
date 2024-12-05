@@ -9,6 +9,7 @@ import {
   Query,
   UseGuards,
   Req,
+  SetMetadata,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto, LoginUserDto } from './dto/index';
@@ -52,6 +53,16 @@ export class UsersController {
       user,
       user_email,
       rawHeaders,
+    };
+  }
+
+  @Get('private2')
+  //@SetMetadata('roles')
+  @UseGuards(AuthGuard())
+  privateRoute2(@GetUser() user: User) {
+    return {
+      ok: true,
+      user,
     };
   }
 
