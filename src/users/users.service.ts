@@ -12,14 +12,13 @@ import * as bcrypt from 'bcrypt';
 
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
-import { In, Repository } from 'typeorm';
+import { Repository } from 'typeorm';
 import { User } from './entities/user.entity';
 import { PaginationDto } from 'src/commom/dto/pagination.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
 import { Role } from 'src/roles/entities/role.entity';
-import { Blog } from 'src/blogs/entities/blog.entity';
 
 @Injectable()
 export class UsersService {
@@ -47,7 +46,6 @@ export class UsersService {
         role.id = id;
         return role;
       });
-
 
       await this._userRepository.save(user);
       delete user.user_password;
