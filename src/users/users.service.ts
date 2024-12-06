@@ -18,7 +18,6 @@ import { PaginationDto } from 'src/commom/dto/pagination.dto';
 import { LoginUserDto } from './dto/login-user.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
-import { Role } from 'src/roles/entities/role.entity';
 
 @Injectable()
 export class UsersService {
@@ -27,23 +26,22 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly _userRepository: Repository<User>,
-    @InjectRepository(Role)
-    private readonly _roleRepository: Repository<Role>,
     private readonly _jwtService: JwtService,
   ) {}
 
   async create(createUserDto: CreateUserDto) {
     try {
-      const { user_password, user_role, ...userData } = createUserDto;
+      const { user_password, ...userData } = createUserDto;
 
       const user = this._userRepository.create({
         ...userData,
         user_password: bcrypt.hashSync(user_password, 10),
       });
 
-      const role = new Role();
-      role.id = user_role; // Assign the single role ID
-      user.roles = role; // Wrap it in an array
+      // CUANDO USABA ManyToMany
+      // const role = new Role();
+      // role.id = user_role; // Assign the single role ID
+      // user.roles = role; // Wrap it in an array
 
       await this._userRepository.save(user);
       delete user.user_password;

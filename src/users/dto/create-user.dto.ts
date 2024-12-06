@@ -1,9 +1,9 @@
 import { Type } from 'class-transformer';
 import {
+  IsArray,
   IsDate,
   IsEmail,
   IsString,
-  IsUUID,
   Matches,
   MaxLength,
   MinLength,
@@ -37,6 +37,7 @@ export class CreateUserDto {
   @Type(() => Date)
   user_birthday: Date;
 
-  @IsUUID()
-  user_role: string;
+  @IsArray()
+  @IsString()
+  user_roles: string[];
 }

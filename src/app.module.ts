@@ -1,6 +1,4 @@
 import { Module } from '@nestjs/common';
-import { RolesController } from './roles/roles.controller';
-import { RolesModule } from './roles/roles.module';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { CommomModule } from './commom/commom.module';
@@ -10,7 +8,6 @@ import { BlogsModule } from './blogs/blogs.module';
 
 @Module({
   imports: [
-    RolesModule,
     ConfigModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'mysql',
@@ -27,6 +24,5 @@ import { BlogsModule } from './blogs/blogs.module';
     UsersModule,
     BlogsModule,
   ],
-  controllers: [RolesController],
 })
 export class AppModule {}
