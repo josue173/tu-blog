@@ -37,7 +37,7 @@ export class CreateUserDto {
   @Type(() => Date)
   user_birthday: Date;
 
+  @IsString({ each: true })
   @IsArray()
-  @IsString()
   user_roles: string[];
 }

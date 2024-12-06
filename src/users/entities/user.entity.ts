@@ -47,10 +47,9 @@ export class User {
   user_birthday: Date;
 
   @Column({
-    type: 'varchar',
-    array: true,
+    type: 'simple-array',
   })
-  roles: string[];
+  user_roles: string[];
 
   @OneToMany(() => Blog, (blog) => blog.blog_owner, { cascade: true })
   blog: Blog; // virtual relationship, exists only in the entity for navigation purposes
