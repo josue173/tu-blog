@@ -1,24 +1,29 @@
 import { Reflector } from '@nestjs/core';
 import {
-  BadRequestException,
   CanActivate,
   ExecutionContext,
-  ForbiddenException,
   Injectable,
+  BadRequestException,
+  ForbiddenException,
 } from '@nestjs/common';
 import { Observable } from 'rxjs';
 import { User } from 'src/users/entities/user.entity';
+import { META_DATA } from 'src/users/decorators/rol-protected.decorator';
 
 @Injectable()
 export class UserRoleGuard implements CanActivate {
   constructor(private readonly reflector: Reflector) {}
+
   canActivate(
     context: ExecutionContext,
   ): boolean | Promise<boolean> | Observable<boolean> {
-    const validRoles: string = this.reflector.get(
-      'roles',
+    const validRoles: string[] = this.reflector.get(
+      META_DATA,
       context.getHandler(),
     );
+
+    if (!validRoles) return true;
+    if (validRoles.length === 0) return true;
 
     const req = context.switchToHttp().getRequest();
     const user = req.user as User;
@@ -32,7 +37,7 @@ export class UserRoleGuard implements CanActivate {
     }
 
     throw new ForbiddenException(
-      `User ${user.user_first_name} needs a valid role: ${validRoles}`,
+      `User ${user.user_first_name} need a valid role: [${validRoles}]`,
     );
   }
 }
