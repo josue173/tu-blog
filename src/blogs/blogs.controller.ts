@@ -1,14 +1,27 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+} from '@nestjs/common';
 import { BlogsService } from './blogs.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
 import { UpdateBlogDto } from './dto/update-blog.dto';
+import { Auth, GetUser } from 'src/users/decorators';
+import { ValidRoles } from 'src/users/interfaces';
+import { User } from 'src/users/entities/user.entity';
 
 @Controller('blogs')
 export class BlogsController {
   constructor(private readonly blogsService: BlogsService) {}
-
-  @Post()
-  create(@Body() createBlogDto: CreateBlogDto) {
+  
+  @Post('create')
+  @Auth(ValidRoles.escritor)
+  create(@Body() createBlogDto: CreateBlogDto, @GetUser() user: User) {
+    createBlogDto.blog_owner = user.user_id;
     return this.blogsService.create(createBlogDto);
   }
 

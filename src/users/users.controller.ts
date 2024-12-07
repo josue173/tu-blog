@@ -9,7 +9,6 @@ import {
   Query,
   UseGuards,
   Req,
-  SetMetadata,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { CreateUserDto, UpdateUserDto, LoginUserDto } from './dto/index';

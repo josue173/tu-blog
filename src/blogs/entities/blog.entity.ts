@@ -1,5 +1,11 @@
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity()
 export class Blog {
@@ -14,16 +20,20 @@ export class Blog {
 
   @Column({
     type: 'varchar',
+    length: 500,
+    unique: true,
   })
   blog_text: string;
 
   @Column({
     type: 'int',
+    default: 0
   })
   blog_views: number;
 
   @Column({
     type: 'int',
+    default: 0
   })
   blog_likes: number;
 
