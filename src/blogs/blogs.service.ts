@@ -102,7 +102,7 @@ export class BlogsService {
     owner = blog_s.ownerId;
 
     if (user.user_id != owner) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('This is not your blog');
     }
 
     try {
@@ -113,8 +113,9 @@ export class BlogsService {
     }
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} blog`;
+  async remove(id: string) {
+    const blog = await this.findByIdOrName(id);
+    await this._blogRepository.remove(blog);
   }
 
   private handleExceptions(error: any) {
