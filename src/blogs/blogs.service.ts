@@ -34,7 +34,7 @@ export class BlogsService {
   async findAll(paginationDto: PaginationDto) {
     const { limit = 10, offset = 0 } = paginationDto;
 
-    return this._blogRepository
+    return await this._blogRepository
       .createQueryBuilder('blog')
       .leftJoinAndSelect('blog.blog_owner', 'owner') // Join the blog_owner relation
       .select([
@@ -64,8 +64,14 @@ export class BlogsService {
         .where('blog.blog_id = :param', { param })
         .orWhere('blog.blog_name LIKE :name', { name: `%${param}%` }) // Búsqueda parcial por nombre
         .leftJoinAndSelect('blog.blog_owner', 'owner') // Si quieres incluir datos del propietario
-        .select(['blog', 'owner.username'])
+        .select(['blog', 'owner.user_id'])
         .getMany();
+      console.log(blog);
+
+      blog.forEach((blog) => {
+        const { blog_owner } = blog;
+        console.log(blog_owner);
+      });
 
       if (!blog) {
         throw new BadRequestException(
@@ -80,22 +86,22 @@ export class BlogsService {
   }
 
   async update(blog_id: string, updateBlogDto: UpdateBlogDto, user: User) {
-    const blog = await this._blogRepository.preload({
+    let owner = '';
+
+    const blog = await this._blogRepository.findOneBy({
       blog_id,
-      ...updateBlogDto,
     });
 
-    const blog_owner = await this._blogRepository
+    const blog_s = await this._blogRepository
       .createQueryBuilder('blog')
-      .leftJoinAndSelect('blog.blog_owner', 'owner') // Join with the owner (User entity)
+      .leftJoin('blog.blog_owner', 'owner') // Join with the owner table
       .where('blog.blog_id = :blog_id', { blog_id })
-      .getOne(); // Get the single blog record
+      .select('owner.user_id', 'ownerId') // Select only the owner's user_id
+      .getRawOne();
 
-    // const 
-    console.log(blog_owner.blog_owner);
-    // console.log(user);
+    owner = blog_s.ownerId;
 
-    if (user.user_id != updateBlogDto.blog_owner) {
+    if (user.user_id != owner) {
       throw new UnauthorizedException();
     }
 
