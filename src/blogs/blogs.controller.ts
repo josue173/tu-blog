@@ -43,12 +43,12 @@ export class BlogsController {
     @Param('id') id: string,
     @Body() updateBlogDto: UpdateBlogDto,
     @GetUser() user: User,
-  ) {    
+  ) {
     return this.blogsService.update(id, updateBlogDto, user);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.blogsService.remove(+id);
+  remove(@Param('id') id: string, @GetUser() user: User) {
+    return this.blogsService.remove(id, user);
   }
 }

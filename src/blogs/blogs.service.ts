@@ -86,9 +86,7 @@ export class BlogsService {
   }
 
   async update(blog_id: string, updateBlogDto: UpdateBlogDto, user: User) {
-    let owner = '';
-
-    const blog = await this._blogRepository.findOneBy({
+    const blog = await this._blogRepository.preload({
       blog_id,
     });
 
@@ -99,9 +97,7 @@ export class BlogsService {
       .select('owner.user_id', 'ownerId') // Select only the owner's user_id
       .getRawOne();
 
-    owner = blog_s.ownerId;
-
-    if (user.user_id != owner) {
+    if (user.user_id != blog_s.ownerId) {
       throw new UnauthorizedException('This is not your blog');
     }
 
@@ -113,8 +109,18 @@ export class BlogsService {
     }
   }
 
-  async remove(id: string) {
-    const blog = await this.findByIdOrName(id);
+  async remove(blog_id: string, user: User) {
+    const blog = await this.findByIdOrName(blog_id);
+    const blog_s = await this._blogRepository
+      .createQueryBuilder('blog')
+      .leftJoin('blog.blog_owner', 'owner') // Join with the owner table
+      .where('blog.blog_id = :blog_id', { blog_id })
+      .select('owner.user_id', 'ownerId') // Select only the owner's user_id
+      .getRawOne();
+
+    if (user.user_id != blog_s.ownerId) {
+      throw new UnauthorizedException('This is not your blog');
+    }
     await this._blogRepository.remove(blog);
   }
 
