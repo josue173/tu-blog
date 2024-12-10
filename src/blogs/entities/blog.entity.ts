@@ -27,13 +27,13 @@ export class Blog {
 
   @Column({
     type: 'int',
-    default: 0
+    default: 0,
   })
   blog_views: number;
 
   @Column({
     type: 'int',
-    default: 0
+    default: 0,
   })
   blog_likes: number;
 

@@ -8,7 +8,7 @@ import {
 
 export class CreateBlogDto {
   @IsString()
-  @MaxLength(15)
+  @MaxLength(25)
   blog_name: string;
   @IsString()
   blog_text: string;
