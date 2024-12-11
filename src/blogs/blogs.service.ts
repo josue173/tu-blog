@@ -90,12 +90,11 @@ export class BlogsService {
         .leftJoinAndSelect('blog.blog_owner', 'owner') // Si quieres incluir datos del propietario
         .select(['blog', 'owner.user_id'])
         .getMany();
-      console.log(blog);
 
-      blog.forEach((blog) => {
-        const { blog_owner } = blog;
-        console.log(blog_owner);
-      });
+      // blog.forEach((blog) => {
+      //   const { blog_owner } = blog;
+      //   console.log(blog_owner);
+      // });
 
       if (!blog) {
         throw new BadRequestException(
@@ -110,24 +109,51 @@ export class BlogsService {
   }
 
   async update(blog_id: string, updateBlogDto: UpdateBlogDto, user: User) {
-    const blog = await this._blogRepository.preload({
-      blog_id,
-    });
-
-    const blog_s = await this._blogRepository
-      .createQueryBuilder('blog')
-      .leftJoin('blog.blog_owner', 'owner') // Join with the owner table
-      .where('blog.blog_id = :blog_id', { blog_id })
-      .select('owner.user_id', 'ownerId') // Select only the owner's user_id
-      .getRawOne();
-
-    if (user.user_id != blog_s.ownerId) {
-      throw new UnauthorizedException('This is not your blog');
-    }
-
     try {
+      const blog = await this._blogRepository.preload({
+        blog_id,
+      });
+
+      if (!blog) {
+        throw new BadRequestException(`Blog with ID ${blog_id} not found.`);
+      }
+
+      // Verify that the user is the owner of the blog
+      const blog_s = await this._blogRepository
+        .createQueryBuilder('blog')
+        .leftJoin('blog.blog_owner', 'owner') // Join with the owner table
+        .where('blog.blog_id = :blog_id', { blog_id })
+        .select('owner.user_id', 'ownerId') // Select only the owner's user_id
+        .getRawOne();
+
+      if (user.user_id !== blog_s.ownerId) {
+        throw new UnauthorizedException('This is not your blog');
+      }
+
+      // Handle categories: update the categories list
+      if (updateBlogDto.categories) {
+        const validCategories = await Promise.all(
+          updateBlogDto.categories.map(async (cat_id) => {
+            const category = await this._categoryRepository.findOne({
+              where: { cat_id },
+            });
+            if (!category) {
+              throw new BadRequestException(
+                `Category with ID ${cat_id} not found.`,
+              );
+            }
+            return category; // Return the Category entity
+          }),
+        );
+
+        // Assign the new valid categories to the blog
+        blog.categories = validCategories;
+      }
+
+      // Save the updated blog
       await this._blogRepository.save(blog);
-      return user;
+
+      return blog;
     } catch (error) {
       this.handleExceptions(error);
     }

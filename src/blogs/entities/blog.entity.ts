@@ -44,7 +44,7 @@ export class Blog {
   @JoinColumn({ name: 'blog_owner' })
   blog_owner: string;
 
-  @ManyToMany(() => Category, (category) => category.blogs)
+  @ManyToMany(() => Category, (category) => category.blogs, { cascade: true })
   @JoinTable({
     name: 'blog_categories',
     joinColumn: {
