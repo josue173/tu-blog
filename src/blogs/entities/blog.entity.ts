@@ -1,8 +1,11 @@
+import { Category } from 'src/categories/entities/category.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
   Entity,
   JoinColumn,
+  JoinTable,
+  ManyToMany,
   ManyToOne,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -40,4 +43,20 @@ export class Blog {
   @ManyToOne(() => User, (user) => user.blog)
   @JoinColumn({ name: 'blog_owner' })
   blog_owner: string;
+
+  @ManyToMany(() => Category, (category) => category.blogs)
+  @JoinTable({
+    name: 'blog_categories',
+    joinColumn: {
+      name: 'blog',
+      referencedColumnName: 'blog_id',
+      foreignKeyConstraintName: 'blog_id',
+    },
+    inverseJoinColumn: {
+      name: 'category',
+      referencedColumnName: 'cat_id',
+      foreignKeyConstraintName: 'cat_id',
+    },
+  })
+  categories: string[];
 }

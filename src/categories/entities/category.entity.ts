@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
+import { Blog } from 'src/blogs/entities/blog.entity';
+import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Category {
@@ -13,4 +14,7 @@ export class Category {
     type: 'varchar',
   })
   description: string;
+
+  @ManyToMany(() => Blog, (blog) => blog.categories)
+  blogs: Blog[];
 }

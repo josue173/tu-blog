@@ -12,6 +12,7 @@ import { Blog } from './entities/blog.entity';
 import { Repository } from 'typeorm';
 import { PaginationDto } from 'src/commom/dto/pagination.dto';
 import { User } from 'src/users/entities/user.entity';
+import { Category } from 'src/categories/entities/category.entity';
 
 @Injectable()
 export class BlogsService {
@@ -19,12 +20,43 @@ export class BlogsService {
   constructor(
     @InjectRepository(Blog)
     private readonly _blogRepository: Repository<Blog>,
+    @InjectRepository(Category)
+    private readonly _categoryRepository: Repository<Category>,
   ) {}
 
   async create(createBlogDto: CreateBlogDto) {
     try {
-      const blog = this._blogRepository.create(createBlogDto);
+      const { categories } = createBlogDto;
+
+      // Ensure categories are valid and exist in the database
+      const validCategories: string[] = await Promise.all(
+        categories.map(async (cat_id) => {
+          const category = await this._categoryRepository.findOne({
+            where: { cat_id },
+          });
+          if (!category) {
+            throw new Error(`Category with ID ${cat_id} not found`);
+          }
+          return cat_id; // Return the valid UUID
+        }),
+      );
+
+      // Create the blog entity and assign valid category UUIDs
+      const blog: Blog = this._blogRepository.create({
+        ...createBlogDto,
+        // categories: validCategories, // Store only the string array of UUIDs
+      });
+
+      const newCategories = new Category();
+      categories.forEach((category) => {
+        newCategories.cat_id = category;
+      });
+      blog.categories = validCategories;
+      console.log(blog.categories);
+
+      // Save the blog entity
       await this._blogRepository.save(blog);
+
       return blog;
     } catch (error) {
       this.handleExceptions(error);

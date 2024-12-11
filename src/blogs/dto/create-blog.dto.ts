@@ -1,4 +1,5 @@
 import {
+  IsArray,
   IsNumber,
   IsOptional,
   IsString,
@@ -22,4 +23,7 @@ export class CreateBlogDto {
   @IsUUID()
   @IsOptional()
   blog_owner: string;
+  @IsArray()
+  @IsUUID('4', { each: true })
+  categories: string[];
 }
