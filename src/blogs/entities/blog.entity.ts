@@ -58,5 +58,5 @@ export class Blog {
       foreignKeyConstraintName: 'cat_id',
     },
   })
-  categories: string[];
+  categories: Category[]; // Change this to Category[] instead of string[]
 }

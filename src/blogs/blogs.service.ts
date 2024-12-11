@@ -26,10 +26,10 @@ export class BlogsService {
 
   async create(createBlogDto: CreateBlogDto) {
     try {
-      const { categories } = createBlogDto;
+      const { categories, ...blogData } = createBlogDto;
 
       // Ensure categories are valid and exist in the database
-      const validCategories: string[] = await Promise.all(
+      const validCategories = await Promise.all(
         categories.map(async (cat_id) => {
           const category = await this._categoryRepository.findOne({
             where: { cat_id },
@@ -37,24 +37,16 @@ export class BlogsService {
           if (!category) {
             throw new Error(`Category with ID ${cat_id} not found`);
           }
-          return cat_id; // Return the valid UUID
+          return category; // Return the Category entity, not just the UUID
         }),
       );
 
-      // Create the blog entity and assign valid category UUIDs
-      const blog: Blog = this._blogRepository.create({
-        ...createBlogDto,
-        // categories: validCategories, // Store only the string array of UUIDs
+      // Create the blog entity and assign the Category entities
+      const blog = this._blogRepository.create({
+        ...blogData,
+        categories: validCategories, // Assign the Category objects here
       });
 
-      const newCategories = new Category();
-      categories.forEach((category) => {
-        newCategories.cat_id = category;
-      });
-      blog.categories = validCategories;
-      console.log(blog.categories);
-
-      // Save the blog entity
       await this._blogRepository.save(blog);
 
       return blog;

@@ -5,16 +5,18 @@ import { Column, Entity, ManyToMany, PrimaryGeneratedColumn } from 'typeorm';
 export class Category {
   @PrimaryGeneratedColumn('uuid')
   cat_id: string;
+
   @Column({
     type: 'varchar',
     unique: true,
   })
   name: string;
+
   @Column({
     type: 'varchar',
   })
   description: string;
 
   @ManyToMany(() => Blog, (blog) => blog.categories)
-  blogs: Blog[];
+  blogs: Blog[]; // Change this to Blog[] instead of string[]
 }
