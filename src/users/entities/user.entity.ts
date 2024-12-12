@@ -1,4 +1,5 @@
 import { Blog } from 'src/blogs/entities/blog.entity';
+import { Like } from 'src/likes/entities/like.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -53,6 +54,9 @@ export class User {
 
   @OneToMany(() => Blog, (blog) => blog.blog_owner, { cascade: true })
   blog: Blog; // virtual relationship, exists only in the entity for navigation purposes
+
+  @OneToMany(() => Like, (like) => like.like_owner)
+  like: Like[];
 
   // @ManyToMany(() => Role)
   // @JoinTable({

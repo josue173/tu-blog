@@ -1,12 +1,16 @@
 import { IsBoolean } from 'class-validator';
-import { Entity, PrimaryColumn } from 'typeorm';
+import { Blog } from 'src/blogs/entities/blog.entity';
+import { User } from 'src/users/entities/user.entity';
+import { Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
 export class Like {
-  @PrimaryColumn()
-  like_owner: string;
-  @PrimaryColumn()
-  like_blog: string;
+  @PrimaryGeneratedColumn()
+  like_id: string;
   @IsBoolean()
   like: boolean;
+  @ManyToOne(() => User, (user) => user.like)
+  like_owner: User;
+  @ManyToOne(() => Blog, (blog) => blog.like)
+  like_blog: Blog;
 }

@@ -1,4 +1,5 @@
 import { Category } from 'src/categories/entities/category.entity';
+import { Like } from 'src/likes/entities/like.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -7,6 +8,7 @@ import {
   JoinTable,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
@@ -34,15 +36,18 @@ export class Blog {
   })
   blog_views: number;
 
-  @Column({
-    type: 'int',
-    default: 0,
-  })
-  blog_likes: number;
+  // @Column({
+  //   type: 'int',
+  //   default: 0,
+  // })
+  // blog_likes: number;
 
   @ManyToOne(() => User, (user) => user.blog)
   @JoinColumn({ name: 'blog_owner' })
   blog_owner: string;
+
+  @OneToMany(() => Like, (like) => like.like_blog)
+  like: Like[];
 
   @ManyToMany(() => Category, (category) => category.blogs, { cascade: true })
   @JoinTable({
