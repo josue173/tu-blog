@@ -83,11 +83,15 @@ export class UsersService {
   }
 
   async findOne(user_id: string) {
-    const role = await this._userRepository.findOneBy({ user_id });
-    if (!role) {
-      throw new NotFoundException(`Role with ID: ${user_id} not found`);
+    try {
+      const user = await this._userRepository.findOneBy({ user_id });
+      if (!user) {
+        throw new NotFoundException(`User with ID: ${user_id} not found`);
+      }
+      return user;
+    } catch (error) {
+      this.handleExceptions(error);
     }
-    return role;
   }
 
   async update(id: string, updateUserDto: UpdateUserDto) {
@@ -96,7 +100,7 @@ export class UsersService {
       ...updateUserDto,
     });
     if (!user) {
-      throw new NotFoundException(`Role with ${id} not found`);
+      throw new NotFoundException(`User with ${id} not found`);
     }
 
     try {

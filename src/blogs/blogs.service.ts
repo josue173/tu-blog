@@ -90,12 +90,10 @@ export class BlogsService {
         .leftJoinAndSelect('blog.blog_owner', 'owner') // Si quieres incluir datos del propietario
         .select(['blog', 'owner.user_id'])
         .getMany();
-
       // blog.forEach((blog) => {
       //   const { blog_owner } = blog;
       //   console.log(blog_owner);
-      // });
-
+      // })
       if (!blog) {
         throw new BadRequestException(
           `No se encontró ningún blog con: ${param}`,
