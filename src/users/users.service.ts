@@ -94,6 +94,8 @@ export class UsersService {
     }
   }
 
+  
+
   async update(id: string, updateUserDto: UpdateUserDto) {
     const user = await this._userRepository.preload({
       user_id: id,

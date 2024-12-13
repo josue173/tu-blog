@@ -3,6 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateLikeDto } from './dto/create-like.dto';
 import { UpdateLikeDto } from './dto/update-like.dto';
@@ -36,6 +37,15 @@ export class LikesService {
         blog_id: like_blog,
       });
 
+      const buscarLike = await this.findByOwnerAndBlog(user, blog);
+
+      if (buscarLike) {
+        // throw new BadRequestException(`The like ${(await buscarLike).like_id}`); // Interesante
+        throw new BadRequestException(
+          `The like ${buscarLike.like_id} already exists`,
+        );
+      }
+
       const newLike: Like = await this._likeRepository.create({
         like,
         like_owner: user,
@@ -50,12 +60,32 @@ export class LikesService {
     }
   }
 
-  findAll() {
-    return `This action returns all likes`;
+  async findOne(like_id: string) {
+    try {
+      const like = await this._likeRepository.findOneBy({ like_id });
+      if (!like) {
+        throw new NotFoundException(`Like with ID: ${like_id} not found`);
+      }
+      return like;
+    } catch (error) {
+      this.handleExceptions(error);
+    }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} like`;
+  async findByOwnerAndBlog(like_owner: User, like_blog: Blog) {
+    try {
+      const like = await this._likeRepository.findOne({
+        where: {
+          like_owner: { user_id: like_owner.user_id },
+          like_blog: { blog_id: like_blog.blog_id },
+        },
+        relations: ['like_owner', 'like_blog'],
+      });
+
+      return like;
+    } catch (error) {
+      this.handleExceptions(error);
+    }
   }
 
   update(id: number, updateLikeDto: UpdateLikeDto) {
