@@ -9,6 +9,7 @@ import { LikesModule } from './likes/likes.module';
 import { User } from './users/entities/user.entity';
 import { Blog } from './blogs/entities/blog.entity';
 import { Like } from './likes/entities/like.entity';
+import { CommentsModule } from './comments/comments.module';
 
 @Module({
   imports: [
@@ -29,6 +30,7 @@ import { Like } from './likes/entities/like.entity';
     UsersModule,
     BlogsModule,
     LikesModule,
+    CommentsModule,
   ],
 })
 export class AppModule {}
