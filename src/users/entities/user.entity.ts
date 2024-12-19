@@ -1,4 +1,5 @@
 import { Blog } from 'src/blogs/entities/blog.entity';
+import { Comment } from 'src/comments/entities/comment.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import {
   BeforeInsert,
@@ -58,6 +59,9 @@ export class User {
   @OneToMany(() => Like, (like) => like.like_owner)
   like: Like[];
 
+  @OneToMany(() => Comment, (comment) => comment.comm_blog)
+  comment: Comment[];
+
   // @ManyToMany(() => Role)
   // @JoinTable({
   //   name: 'users_roles',
@@ -73,7 +77,6 @@ export class User {
   //   },
   // })
   // roles: Role;
-
   @BeforeInsert()
   @BeforeUpdate()
   formatNames() {

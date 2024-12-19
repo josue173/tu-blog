@@ -10,6 +10,7 @@ import { User } from './users/entities/user.entity';
 import { Blog } from './blogs/entities/blog.entity';
 import { Like } from './likes/entities/like.entity';
 import { CommentsModule } from './comments/comments.module';
+import { Comment } from './comments/entities/comment.entity';
 
 @Module({
   imports: [
@@ -21,7 +22,7 @@ import { CommentsModule } from './comments/comments.module';
       database: process.env.DB_NAME,
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
-      entities: [User, Blog, Like],
+      entities: [User, Blog, Like, Comment],
       autoLoadEntities: true,
       synchronize: true, // solo para desarrollo
     }),

@@ -1,4 +1,5 @@
 import { Category } from 'src/categories/entities/category.entity';
+import { Comment } from 'src/comments/entities/comment.entity';
 import { Like } from 'src/likes/entities/like.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
@@ -46,8 +47,13 @@ export class Blog {
   @JoinColumn({ name: 'blog_owner' })
   blog_owner: string;
 
+  // PARA LIKE
   @OneToMany(() => Like, (like) => like.like_blog)
   like: Like[];
+
+  // PARA COMMENTARIOS
+  @OneToMany(() => Comment, (comment) => comment.comm_owner)
+  comment: Comment[];
 
   @ManyToMany(() => Category, (category) => category.blogs, { cascade: true })
   @JoinTable({
