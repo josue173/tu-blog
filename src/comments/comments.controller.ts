@@ -4,13 +4,11 @@ import {
   Delete,
   Get,
   Param,
-  Patch,
   Post,
   Query,
 } from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
 import { Auth, GetUser } from 'src/users/decorators';
 import { User } from 'src/users/entities/user.entity';
 import { PaginationDto } from 'src/commom/dto/pagination.dto';

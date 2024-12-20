@@ -1,6 +1,7 @@
 import { Blog } from 'src/blogs/entities/blog.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { Like } from 'src/likes/entities/like.entity';
+import { Qualification } from 'src/qualifications/entities/qualification.entity';
 import {
   BeforeInsert,
   BeforeUpdate,
@@ -56,10 +57,13 @@ export class User {
   @OneToMany(() => Blog, (blog) => blog.blog_owner, { cascade: true })
   blog: Blog; // virtual relationship, exists only in the entity for navigation purposes
 
-  @OneToMany(() => Like, (like) => like.like_owner)
+  @OneToMany(() => Like, (like) => like.like_owner, { cascade: true })
   like: Like[];
 
-  @OneToMany(() => Comment, (comment) => comment.comm_blog)
+  @OneToMany(() => Qualification, (qua) => qua.qua_owner, { cascade: true })
+  qualification: Qualification;
+
+  @OneToMany(() => Comment, (comment) => comment.comm_blog, { cascade: true })
   comment: Comment[];
 
   // @ManyToMany(() => Role)

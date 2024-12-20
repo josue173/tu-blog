@@ -1,6 +1,7 @@
 import { Category } from 'src/categories/entities/category.entity';
 import { Comment } from 'src/comments/entities/comment.entity';
 import { Like } from 'src/likes/entities/like.entity';
+import { Qualification } from 'src/qualifications/entities/qualification.entity';
 import { User } from 'src/users/entities/user.entity';
 import {
   Column,
@@ -50,6 +51,10 @@ export class Blog {
   // PARA LIKE
   @OneToMany(() => Like, (like) => like.like_blog)
   like: Like[];
+
+  // PARA CALIFICACION
+  @OneToMany(() => Qualification, (qua) => qua.qua_blog)
+  qualification: Qualification;
 
   // PARA COMMENTARIOS
   @OneToMany(() => Comment, (comment) => comment.comm_owner)

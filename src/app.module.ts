@@ -11,6 +11,8 @@ import { Blog } from './blogs/entities/blog.entity';
 import { Like } from './likes/entities/like.entity';
 import { CommentsModule } from './comments/comments.module';
 import { Comment } from './comments/entities/comment.entity';
+import { QualificationsModule } from './qualifications/qualifications.module';
+import { Qualification } from './qualifications/entities/qualification.entity';
 
 @Module({
   imports: [
@@ -22,7 +24,7 @@ import { Comment } from './comments/entities/comment.entity';
       database: process.env.DB_NAME,
       username: process.env.DB_USER,
       password: process.env.DB_PASSWORD,
-      entities: [User, Blog, Like, Comment],
+      entities: [User, Blog, Like, Comment, Qualification],
       autoLoadEntities: true,
       synchronize: true, // solo para desarrollo
     }),
@@ -32,6 +34,7 @@ import { Comment } from './comments/entities/comment.entity';
     BlogsModule,
     LikesModule,
     CommentsModule,
+    QualificationsModule,
   ],
 })
 export class AppModule {}
