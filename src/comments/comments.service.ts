@@ -3,9 +3,9 @@ import {
   Injectable,
   InternalServerErrorException,
   Logger,
+  NotFoundException,
 } from '@nestjs/common';
 import { CreateCommentDto } from './dto/create-comment.dto';
-import { UpdateCommentDto } from './dto/update-comment.dto';
 import { User } from 'src/users/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Comment } from './entities/comment.entity';
@@ -21,6 +21,8 @@ export class CommentsService {
     private readonly _commentRepository: Repository<Comment>,
     @InjectRepository(Blog)
     private readonly _blogRepository: Repository<Blog>,
+    @InjectRepository(User)
+    private readonly _userRepository: Repository<User>,
   ) {}
 
   async create(createCommentDto: CreateCommentDto, user: User) {
@@ -50,22 +52,42 @@ export class CommentsService {
         take: limit,
         skip: offset,
       });
-      return comments;
+      return comments.map((comment) => ({
+        comm_id: comment.comm_id,
+        comm_text: comment.comm_text,
+        owner: {
+          id: comment.comm_owner.user_id,
+          name: comment.comm_owner.user_first_name,
+        },
+        blog: {
+          id: comment.comm_blog.blog_id,
+          title: comment.comm_blog.blog_name,
+        },
+      }));
     } catch (error) {
       throw new Error(`Failed to retrieve comments: ${error.message}`);
     }
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} comment`;
+  async findOne(comm_id: string) {
+    const category = await this._commentRepository.findOneBy({ comm_id });
+    if (!category)
+      throw new NotFoundException(`Comment with ID: ${comm_id} not found`);
+    return category;
   }
 
-  update(id: number, updateCommentDto: UpdateCommentDto) {
-    return `This action updates a #${id} comment`;
-  }
+  // update(id: number, updateCommentDto: UpdateCommentDto) {
+  //   return `This action updates a #${id} comment`;
+  // }
 
-  remove(id: number) {
-    return `This action removes a #${id} comment`;
+  async remove(comm_id: string, user: User) {
+    const comment = await this.findOne(comm_id);
+    const comment_owner = await this._userRepository.findOneBy({
+      user_id: user.user_id,
+    });
+    if (user != comment_owner) throw new Error('This is not your comment!');
+
+    await this._commentRepository.remove(comment);
   }
 
   private handleExceptions(error: any) {
