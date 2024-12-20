@@ -1,20 +1,33 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Query,
+} from '@nestjs/common';
 import { CommentsService } from './comments.service';
 import { CreateCommentDto } from './dto/create-comment.dto';
 import { UpdateCommentDto } from './dto/update-comment.dto';
+import { Auth, GetUser } from 'src/users/decorators';
+import { User } from 'src/users/entities/user.entity';
+import { PaginationDto } from 'src/commom/dto/pagination.dto';
 
+@Auth()
 @Controller('comments')
 export class CommentsController {
   constructor(private readonly commentsService: CommentsService) {}
 
   @Post()
-  create(@Body() createCommentDto: CreateCommentDto) {
-    return this.commentsService.create(createCommentDto);
+  create(@Body() createCommentDto: CreateCommentDto, @GetUser() user: User) {
+    return this.commentsService.create(createCommentDto, user);
   }
 
   @Get()
-  findAll() {
-    return this.commentsService.findAll();
+  findAll(@Query() paginationDto: PaginationDto) {
+    return this.commentsService.findAll(paginationDto);
   }
 
   @Get(':id')

@@ -27,7 +27,7 @@ export class BlogsController {
     createBlogDto.blog_owner = user.user_id;
     return this.blogsService.create(createBlogDto);
   }
-
+  
   @Get('get-all')
   findAll(@Query() paginationDto: PaginationDto) {
     return this.blogsService.findAll(paginationDto);
@@ -37,8 +37,9 @@ export class BlogsController {
   findByIdOrName(@Query('param') param: string) {
     return this.blogsService.findByIdOrName(param);
   }
-
+  
   @Patch(':id')
+  @Auth(ValidRoles.escritor)
   update(
     @Param('id') id: string,
     @Body() updateBlogDto: UpdateBlogDto,
@@ -46,8 +47,9 @@ export class BlogsController {
   ) {
     return this.blogsService.update(id, updateBlogDto, user);
   }
-
+  
   @Delete(':id')
+  @Auth(ValidRoles.escritor)
   remove(@Param('id') id: string, @GetUser() user: User) {
     return this.blogsService.remove(id, user);
   }

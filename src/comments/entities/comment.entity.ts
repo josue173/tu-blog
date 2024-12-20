@@ -1,9 +1,15 @@
 import { Blog } from 'src/blogs/entities/blog.entity';
 import { User } from 'src/users/entities/user.entity';
-import { Column, Entity, JoinColumn, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 
 @Entity({
-  name: "comments"
+  name: 'comments',
 })
 export class Comment {
   @PrimaryGeneratedColumn('uuid')
