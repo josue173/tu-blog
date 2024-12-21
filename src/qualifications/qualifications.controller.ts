@@ -11,17 +11,24 @@ export class QualificationsController {
   constructor(private readonly qualificationsService: QualificationsService) {}
 
   @Post()
-  create(@Body() createQualificationDto: CreateQualificationDto, @GetUser() user: User) {
+  create(
+    @Body() createQualificationDto: CreateQualificationDto,
+    @GetUser() user: User,
+  ) {
     return this.qualificationsService.create(createQualificationDto, user);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateQualificationDto: UpdateQualificationDto) {
-    return this.qualificationsService.update(+id, updateQualificationDto);
+  update(
+    @Param('id') id: string,
+    @Body() updateQualificationDto: UpdateQualificationDto,
+    @GetUser() user: User,
+  ) {
+    return this.qualificationsService.update(id, updateQualificationDto, user);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.qualificationsService.remove(+id);
+  remove(@Param('id') id: string, @GetUser() user: User) {
+    return this.qualificationsService.remove(id, user);
   }
 }

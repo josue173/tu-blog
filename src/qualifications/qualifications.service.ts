@@ -26,16 +26,16 @@ export class QualificationsService {
   async create(createQualificationDto: CreateQualificationDto, user: User) {
     try {
       const { qua_blog, qualification } = createQualificationDto;
-      const blogExists: Blog = await this._blogRepository.findOneBy({
-        blog_id: qua_blog,
+      const blogExists: Blog = await this._blogRepository.findOne({
+        where: { blog_id: qua_blog },
+        relations: ['owner'], // Aquí agregas las relaciones que deseas cargar
       });
       if (!blogExists) {
         throw new Error('Blog not found.');
       }
 
-      const quaDuplicated = await this._quaRepository.findOneBy({
-        qua_owner: user,
-        qua_blog: blogExists,
+      const quaDuplicated = await this._quaRepository.findOne({
+        where: { qua_owner: user, qua_blog: blogExists },
       });
       if (quaDuplicated) throw new BadRequestException();
 
@@ -51,11 +51,45 @@ export class QualificationsService {
     }
   }
 
-  update(id: number, updateQualificationDto: UpdateQualificationDto) {
-    return `This action updates a #${id} qualification`;
+  async update(
+    id: string,
+    updateQualificationDto: UpdateQualificationDto,
+    user: User,
+  ) {
+    try {
+      const { qualification, qua_blog } = updateQualificationDto;
+      const blogExists: Blog = await this._blogRepository.findOne({
+        where: { blog_id: qua_blog },
+        relations: ['blog_owner'], // Aquí también agregas las relaciones necesarias
+      });
+      if (!blogExists) throw new Error('Blog not found.');
+
+      const quaExists: Qualification = await this._quaRepository.findOne({
+        where: { qua_id: id },
+        relations: ['qua_owner', 'qua_blog'], // Asegúrate de incluir las relaciones necesarias
+      });
+      if (!quaExists) throw new Error('Qualification not found.');
+
+      // if (user != quaExists.qua_owner) // Son instancias de la entidad User, se compara la referencia al obeto
+      if (user.user_id != quaExists.qua_owner.user_id)
+        throw new BadRequestException(`This is not your qualification`);
+
+      const updatedQualification = await this._quaRepository.preload({
+        qua_id: id,
+        qualification,
+      });
+
+      if (!updatedQualification) {
+        throw new BadRequestException('Qualification not found.');
+      }
+
+      return await this._quaRepository.save(updatedQualification);
+    } catch (error) {
+      this.handleExceptions(error);
+    }
   }
 
-  remove(id: number) {
+  remove(id: string, user: User) {
     return `This action removes a #${id} qualification`;
   }
 
