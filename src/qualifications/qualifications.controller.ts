@@ -1,4 +1,4 @@
-import { Controller, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import { Controller, Post, Body, Patch, Param } from '@nestjs/common';
 import { QualificationsService } from './qualifications.service';
 import { CreateQualificationDto } from './dto/create-qualification.dto';
 import { UpdateQualificationDto } from './dto/update-qualification.dto';
@@ -27,8 +27,8 @@ export class QualificationsController {
     return this.qualificationsService.update(id, updateQualificationDto, user);
   }
 
-  @Delete(':id')
-  remove(@Param('id') id: string, @GetUser() user: User) {
-    return this.qualificationsService.remove(id, user);
-  }
+  // @Delete(':id')
+  // remove(@Param('id') id: string, @GetUser() user: User) {
+  //   return this.qualificationsService.remove(id, user);
+  // }
 }

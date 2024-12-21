@@ -89,9 +89,15 @@ export class QualificationsService {
     }
   }
 
-  remove(id: string, user: User) {
-    return `This action removes a #${id} qualification`;
-  }
+  // async remove(id: string, user: User) {
+  //   const quaExists: Qualification = await this._quaRepository.findOne({
+  //     where: { qua_id: id },
+  //     relations: ['qua_owner', 'qua_blog'], // Asegúrate de incluir las relaciones necesarias
+  //   });
+  //   if (user.user_id != quaExists.qua_owner.user_id)
+  //     throw new BadRequestException(`This is not your qualification`);
+  //   return await this._quaRepository.remove(quaExists);
+  // }
 
   private handleExceptions(error: any) {
     if (error.code === 'ER_DUP_ENTRY')
