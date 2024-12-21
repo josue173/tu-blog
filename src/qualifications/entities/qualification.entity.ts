@@ -9,7 +9,9 @@ import {
   PrimaryGeneratedColumn,
 } from 'typeorm';
 
-@Entity()
+@Entity({
+  name: "qualifications"
+})
 @Check(`"qualification" BETWEEN 1 AND 5`)
 export class Qualification {
   @PrimaryGeneratedColumn('uuid')
