@@ -55,6 +55,17 @@ export class BlogsService {
     }
   }
 
+  async incrementView(blogId: string) {
+    const blog = await this._blogRepository.findOneBy({ blog_id: blogId });
+
+    if (!blog) {
+      throw new Error('Blog not found');
+    }
+
+    blog.blog_views += 1;
+    await this._blogRepository.save(blog);
+  }
+
   async findAll(paginationDto: PaginationDto) {
     const { limit = 10, offset = 0 } = paginationDto;
 
@@ -108,29 +119,31 @@ export class BlogsService {
 
   async update(blog_id: string, updateBlogDto: UpdateBlogDto, user: User) {
     try {
-      const blog = await this._blogRepository.preload({
-        blog_id,
+      // Busca el blog para verificar existencia y propiedad
+      const existingBlog = await this._blogRepository.findOne({
+        where: { blog_id },
       });
 
-      if (!blog) {
+      if (!existingBlog) {
         throw new BadRequestException(`Blog with ID ${blog_id} not found.`);
       }
 
-      // Verify that the user is the owner of the blog
-      const blog_s = await this._blogRepository
+      // Verifica que el usuario sea el propietario del blog
+      const blogOwner = await this._blogRepository
         .createQueryBuilder('blog')
-        .leftJoin('blog.blog_owner', 'owner') // Join with the owner table
+        .leftJoin('blog.blog_owner', 'owner') // Join con la tabla del propietario
         .where('blog.blog_id = :blog_id', { blog_id })
-        .select('owner.user_id', 'ownerId') // Select only the owner's user_id
+        .select('owner.user_id', 'ownerId') // Selecciona solo el ID del propietario
         .getRawOne();
 
-      if (user.user_id !== blog_s.ownerId) {
+      if (user.user_id !== blogOwner.ownerId) {
         throw new UnauthorizedException('This is not your blog');
       }
 
-      // Handle categories: update the categories list
+      // Prepara las categorías
+      let validCategories = null;
       if (updateBlogDto.categories) {
-        const validCategories = await Promise.all(
+        validCategories = await Promise.all(
           updateBlogDto.categories.map(async (cat_id) => {
             const category = await this._categoryRepository.findOne({
               where: { cat_id },
@@ -140,18 +153,28 @@ export class BlogsService {
                 `Category with ID ${cat_id} not found.`,
               );
             }
-            return category; // Return the Category entity
+            return category;
           }),
         );
-
-        // Assign the new valid categories to the blog
-        blog.categories = validCategories;
       }
 
-      // Save the updated blog
-      await this._blogRepository.save(blog);
+      // Preload con las propiedades válidas
+      const updatedBlog = await this._blogRepository.preload({
+        blog_id,
+        ...updateBlogDto,
+        categories: validCategories || existingBlog.categories, // Asegura que las categorías sean correctas
+      });
 
-      return blog;
+      if (!updatedBlog) {
+        throw new BadRequestException(
+          `Failed to preload blog with ID ${blog_id}.`,
+        );
+      }
+
+      // Guarda los cambios
+      const savedBlog = await this._blogRepository.save(updatedBlog);
+
+      return savedBlog;
     } catch (error) {
       this.handleExceptions(error);
     }

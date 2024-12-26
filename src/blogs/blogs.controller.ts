@@ -6,7 +6,7 @@ import {
   Patch,
   Param,
   Delete,
-  Query
+  Query,
 } from '@nestjs/common';
 import { BlogsService } from './blogs.service';
 import { CreateBlogDto } from './dto/create-blog.dto';
@@ -27,7 +27,7 @@ export class BlogsController {
     createBlogDto.blog_owner = user.user_id;
     return this.blogsService.create(createBlogDto);
   }
-  
+
   @Get('get-all')
   findAll(@Query() paginationDto: PaginationDto) {
     return this.blogsService.findAll(paginationDto);
@@ -37,7 +37,7 @@ export class BlogsController {
   findByIdOrName(@Query('param') param: string) {
     return this.blogsService.findByIdOrName(param);
   }
-  
+
   @Patch(':id')
   @Auth(ValidRoles.escritor)
   update(
@@ -47,7 +47,13 @@ export class BlogsController {
   ) {
     return this.blogsService.update(id, updateBlogDto, user);
   }
-  
+
+  @Patch(':id/view')
+  async incrementView(@Param('id') id: string) {
+    await this.blogsService.incrementView(id);
+    // return { message: `View count for blog ${id} has been incremented.` };
+  }
+
   @Delete(':id')
   @Auth(ValidRoles.escritor)
   remove(@Param('id') id: string, @GetUser() user: User) {
